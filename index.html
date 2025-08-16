@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vivek Yadav // System.Core</title>
+    
+    <!-- Google Fonts: Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #000000;
+            --primary-glow: #00e1ff;
+            --secondary-glow: #ff00c1;
+            --text-primary: #e5e5e5;
+            --text-secondary: #a8b2d1;
+            --panel-bg: rgba(20, 28, 58, 0.6);
+            --panel-border: rgba(0, 225, 255, 0.3);
+            --font-mono: 'Fira Code', monospace;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        /* Basic Reset and Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--bg-color);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        /* Scanline Overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.3), rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        /* Holographic Panel */
+        .holo-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--panel-border);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 20px rgba(0, 225, 255, 0.1), inset 0 0 15px rgba(0, 225, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .holo-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+            animation: scan-line 8s linear infinite;
+        }
+
+        @keyframes scan-line {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        h1, h2, h3 {
+            color: var(--text-primary);
+            font-weight: 500;
+            text-shadow: 0 0 5px var(--primary-glow);
+        }
+
+        /* Header / Hero */
+        .hero {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .glitch-text {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            position: relative;
+            color: var(--text-primary);
+            text-shadow: 0 0 10px var(--primary-glow);
+        }
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            overflow: hidden;
+        }
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--secondary-glow);
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--primary-glow), 2px 2px var(--secondary-glow);
+            animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim-1 { 0%, 100% { clip-path: inset(45% 0 56% 0); } 25% { clip-path: inset(0 0 100% 0); } 50% { clip-path: inset(80% 0 3% 0); } 75% { clip-path: inset(50% 0 45% 0); } }
+        @keyframes glitch-anim-2 { 0%, 100% { clip-path: inset(10% 0 91% 0); } 25% { clip-path: inset(80% 0 3% 0); } 50% { clip-path: inset(30% 0 60% 0); } 75% { clip-path: inset(0 0 100% 0); } }
+
+        .hero h2 {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            text-shadow: none;
+        }
+
+        .contact-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .contact-links a:hover {
+            color: var(--primary-glow);
+            text-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--primary-glow);
+            display: inline-block;
+        }
+        .section-title::before {
+            content: '>> ';
+        }
+
+        /* Projects */
+        .project {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--panel-border);
+        }
+        .project:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .project h3 {
+            font-size: 1.2rem;
+            color: var(--primary-glow);
+            margin-bottom: 5px;
+        }
+        .project-tech {
+            font-size: 0.8rem;
+            color: var(--secondary-glow);
+            margin-bottom: 10px;
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .skill-item {
+            border: 1px solid var(--panel-border);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .skill-item:hover {
+            color: var(--primary-glow);
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 10px rgba(0, 225, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* Scroll Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        ul {
+            list-style: none;
+        }
+        
+        ul li::before {
+            content: "»";
+            color: var(--primary-glow);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="container">
+        <header class="hero reveal">
+            <h1 class="glitch-text" data-text="Vivek Yadav">Vivek Yadav</h1>
+            <h2>[ Creative Developer // Security Analyst ]</h2>
+            <div class="contact-links">
+                <a href="mailto:vivekvector193@gmail.com">vivekvector193@gmail.com</a> |
+                <a href="#">LinkedIn</a> |
+                <a href="#">GitHub</a> |
+                <a href="#">8851672746</a>
+            </div>
+        </header>
+
+        <main>
+            <!-- Profile Section -->
+            <section class="holo-panel reveal">
+                <h2 class="section-title">Identity Packet</h2>
+                <p>Detail-oriented Computer Science student focused on AI/ML, full-stack development, and cybersecurity. Proven ability to architect and deploy robust digital solutions while maintaining a security-first mindset. Seeking to apply my skills to solve complex challenges in a dynamic tech environment.</p>
+            </section>
+
+            <!-- Experience Section -->
+            <section class="holo-panel reveal">
+                <h2 class="section-title">Core Directives</h2>
+                <div>
+                    <h3>Cybersecurity Intern @ <span style="color: var(--primary-glow);">Accenture</span></h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 10px;">[Feb 2025 - June 2025 // Mumbai, India]</p>
+                    <ul>
+                        <li>Completed "Integrated Application Security Services" Nanodegree; honed skills in penetration testing & app security.</li>
+                        <li>Acquired knowledge in Operational Technology (OT) security, ICS/SCADA systems, and compliance frameworks.</li>
+                        <li>Designed a comprehensive Risk Assessment Checklist aligned with the NIST SP 800-82 standard.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section class="holo-panel reveal">
+                <h2 class="section-title">Deployed Modules</h2>
+                <div class="project">
+                    <h3>Ed-Tech Platform</h3>
+                    <p class="project-tech">React | Express | MongoDB | Redux</p>
+                    <p>Full-stack educational platform enabling instructors to manage courses and students to enroll via Razorpay.</p>
+                </div>
+                <div class="project">
+                    <h3>E-Commerce Platform</h3>
+                    <p class="project-tech">React | Express | MongoDB | Stripe</p>
+                    <p>Complete e-commerce solution with user auth, cart functionality, Stripe payments, and an admin control panel.</p>
+                </div>
+                <div class="project">
+                    <h3>Razorpay Homepage Clone</h3>
+                    <p class="project-tech">HTML | Tailwind CSS</p>
+                    <p>Pixel-perfect, responsive clone of the Razorpay homepage, demonstrating advanced CSS and layout skills.</p>
+                </div>
+            </section>
+            
+            <!-- Skills & Education -->
+            <section class="holo-panel reveal">
+                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;">
+                    <div>
+                        <h2 class="section-title">Arsenal</h2>
+                        <div class="skills-grid">
+                            <div class="skill-item">JavaScript</div>
+                            <div class="skill-item">React.js</div>
+                            <div class="skill-item">Node.js</div>
+                            <div class="skill-item">Python</div>
+                            <div class="skill-item">SQL/MongoDB</div>
+                            <div class="skill-item">Docker</div>
+                            <div class="skill-item">Git & GitHub</div>
+                            <div class="skill-item">REST APIs</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Academic Logs</h2>
+                        <div style="margin-bottom: 15px;">
+                            <h3 style="color: var(--text-primary);">B.Tech, CS (AIML)</h3>
+                            <p>ABES Engineering College</p>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">[2021 - 2025]</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <h3 style="color: var(--text-primary);">Senior Secondary (12th)</h3>
+                            <p>DSR Modern School</p>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">[2019 - 2020]</p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--text-primary);">High School (10th)</h3>
+                            <p>DSR Modern School</p>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary);">[2017 - 2018]</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Certifications & Achievements -->
+            <section class="holo-panel reveal">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;">
+                    <div>
+                        <h2 class="section-title">Certifications</h2>
+                        <ul>
+                            <li>Udacity - App Security Nanodegree</li>
+                            <li>HackerRank - React (Basic)</li>
+                            <li>HackerRank - Rest API (Intermediate)</li>
+                            <li>Udemy - Node.js Backend API</li>
+                            <li>HackerRank - SQL (Advanced)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h2 class="section-title">Achievements</h2>
+                        <ul>
+                            <li>GATE 2024 Qualified (CS/IT)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Particle animation script
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particlesArray;
+
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y > canvas.height || this.y < 0) {
+                    this.directionY = -this.directionY;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 0.5;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * .4) - .2;
+                let directionY = (Math.random() * .4) - .2;
+                let color = 'rgba(0, 225, 255, 0.5)';
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+        }
+
+        init();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            init();
+        });
+
+        // Scroll reveal animation
+        function reveal() {
+            const reveals = document.querySelectorAll(".reveal");
+            for (let i = 0; i < reveals.length; i++) {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveals[i].getBoundingClientRect().top;
+                const elementVisible = 50;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal();
+    </script>
+</body>
+</html>
